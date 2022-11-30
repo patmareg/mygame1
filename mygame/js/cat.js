@@ -24,6 +24,7 @@ class Cat {
         this.prevY = this.y
 
         this.jumpingTimes = 0
+        this.isJumping = false
     }
 
     draw() {
@@ -43,12 +44,19 @@ class Cat {
     }
 
     
-    isColliding(obj) {
+    isCollidingPlatform(obj) {
         return this.y + this.height >= obj.y 
             && this.y <= obj.y + obj.height
             && this.x <= obj.x + obj.width
             && this.x + this.width >= obj.x
             && this.prevY + this.height <= obj.y
+    }
+
+    isColliding(obj) {
+        return this.x < obj.x + obj.width
+        && this.x + this.width > obj.x
+        && this.y < obj.y + obj.width
+        && this.y + this.height > obj.y
     }
 
     move() {
@@ -67,8 +75,10 @@ class Cat {
 
     onclick(eventCode) {
         if(eventCode === 32 && this.jumpingTimes < 2) {
+            this.y -= 1
             this.speedY = -3
             this.jumpingTimes++
+            this.isJumping = true
         }
     }
 }

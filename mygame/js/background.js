@@ -1,5 +1,5 @@
 class Background {
-    constructor(ctx) {
+    constructor(ctx, speedY, gravity) {
         this.ctx = ctx
         this.x = 0
         this.y = 0
@@ -12,14 +12,16 @@ class Background {
         this.img.onload = () => {
             this.isReady = true
         }
-
         this.speed = 1
+        this.speedY = speedY
+        this.gravity = gravity
     }
 
     draw() {
         if(this.isReady) {
             this.ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
             this.ctx.drawImage(this.img, this.x + this.width, this.y, this.width, this.height)
+            //this.ctx.drawImage(this.img, this.y - this.height, this.y, this.width, this.height)
         }
     }
 
@@ -27,6 +29,14 @@ class Background {
         this.x -= this.speed
         if(this.x <= -this.width) {
             this.x = 0
+        }
+    }
+
+    moveVertically() {
+        this.y += this.speedY
+        this.speedY += this.gravity
+        if(this.y > this.height) {
+            this.y = 0
         }
     }
 }

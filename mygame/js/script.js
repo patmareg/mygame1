@@ -7,10 +7,10 @@ const startBtn = document.getElementById("start-btn")
 function createGame() {
     startBtn.style.display = "none"
     const game = new Game("canvas")
+    game.start()
     document.addEventListener("keydown", (event) => {
         game.onclick(event)
     })
-    game.start()
 }
 
 function startGame() {

@@ -3,9 +3,9 @@ class Game {
         this.canvas = document.getElementById(canvasId)
         this.ctx = this.canvas.getContext("2d")
         this.intervalId = null
-
-        this.bg = new Background(this.ctx)
         
+        this.platforms = [[], [], []]
+
         this.topPlatforms = []
         this.middlePlatforms = []
         this.bottomPlatforms = []
@@ -13,6 +13,11 @@ class Game {
 
         this.cat = new Cat(this.ctx, 50, 50, 50)
         this.catFalling = false
+
+        this.bg = new Background(this.ctx, this.cat.speedY, this.cat.gravity)
+
+        this.yarns = []
+        this.score = 0
     }
 
     start() {
@@ -20,44 +25,38 @@ class Game {
     }
 
     draw() {
-        let catPlacementCount = 0
-        let changingSprites = 0
+        let count = 0
         this.intervalId = setInterval(() => {
             this.clear()
-            
-            catPlacementCount++
+            count++
 
             this.bg.draw()
             this.bg.move()
             
-            this.addTopPlatforms()
-            this.drawTopPlatforms()
-            this.moveTopPlatforms()
-            this.addMiddlePlatforms()
-            this.drawMiddlePlatforms()
-            this.moveMiddlePlatforms()
-            /*this.addBottomPlatforms()
-            this.drawBottomPlatforms()
-            this.moveBottomPlatforms()*/
+            this.drawEveryPlatform()
 
-            this.addPlatforms(this.bottomPlatforms, this.ctx, this.bg)
-            this.drawPlatforms(this.bottomPlatforms)
-            this.movePlatforms(this.bottomPlatforms)
-
-            if(catPlacementCount === 1) {
-                this.cat.y = this.middlePlatforms[0].y - this.cat.height
+            if(count === 1) {
+                this.cat.y = this.platforms[1][0].y - this.cat.height
             }
             
             this.cat.draw()
             this.cat.move()
-            this.checkCollisions()
-            if(changingSprites % 5 === 0) {
+            //this.checkCollisions(this.platforms)
+            if(count % 5 === 0) {
                 this.cat.walkingSprite()
             }
 
+            if(count % 100 === 0) {
+                this.addYarns()
+            }
+            this.yarns.forEach(yarn => yarn.draw())
+            this.yarns.forEach(yarn => yarn.move())
+
+            this.checkForMovingBg(this.cat, this.canvas, this.bg)
             this.checkForGameOver(this.intervalId)
 
-            changingSprites++
+            this.checkCollisionsYarn()
+
         }, 1000 / 60)
     }
 
@@ -65,136 +64,26 @@ class Game {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
     }
 
-    
-    addTopPlatforms() {
-        if(!this.topPlatforms.length) {
-            this.topPlatforms.push(new Platform(
-                this.ctx,
-                Math.floor(Math.random() * (30 - 10 + 1) + 10),
-                Math.floor(Math.random() * (80 - 40 + 1) + 40),
-                Math.floor(Math.random() * (200 - 100 + 1) + 100),
-                this.bg.speed
-            ))
+    checkCollisions(platform) {
+        if(this.cat.isCollidingPlatform(platform)) {
+            this.cat.y = platform.y - this.cat.height;
+            this.cat.speedY = 0;
+            this.cat.jumpingTimes = 0
         }
-        
-        if (this.topPlatforms[this.topPlatforms.length - 1].x + this.topPlatforms[this.topPlatforms.length - 1].width < this.ctx.canvas.width) {
-            this.newTopPlatform()
-        }
-    }
-    
-    newTopPlatform() {
-        this.topPlatforms.push(new Platform(
-            this.ctx,
-            this.topPlatforms[this.topPlatforms.length - 1].x + this.topPlatforms[this.topPlatforms.length - 1].width + this.gapBetweenPlatforms,
-            Math.floor(Math.random() * (80 - 40 + 1) + 40),
-            Math.floor(Math.random() * (200 - 100 + 1) + 100),
-            this.bg.speed
-        ))
-    }
-
-    moveTopPlatforms() {
-        this.topPlatforms.forEach(platform => platform.move())
-    }
-
-    drawTopPlatforms() {
-        this.topPlatforms.forEach(platform => platform.draw())
-    }
-
-    addMiddlePlatforms() {
-        if(!this.middlePlatforms.length) {
-            this.middlePlatforms.push(new Platform(
-                this.ctx,
-                Math.floor(Math.random() * (30 - 10 + 1) + 10),
-                Math.floor(Math.random() * (180 - 130 + 1) + 130),
-                Math.floor(Math.random() * (200 - 100 + 1) + 100),
-                this.bg.speed
-            ))
-        }
-        
-        if (this.middlePlatforms[this.middlePlatforms.length - 1].x + this.middlePlatforms[this.middlePlatforms.length - 1].width < this.ctx.canvas.width) {
-            this.newMiddlePlatform()
-        }
-    }
-    
-    newMiddlePlatform() {
-        this.middlePlatforms.push(new Platform(
-            this.ctx,
-            this.middlePlatforms[this.middlePlatforms.length - 1].x + this.middlePlatforms[this.middlePlatforms.length - 1].width + this.gapBetweenPlatforms,
-            Math.floor(Math.random() * (180 - 130 + 1) + 130),
-            Math.floor(Math.random() * (200 - 100 + 1) + 100),
-            this.bg.speed
-        ))
-    }
-
-    moveMiddlePlatforms() {
-        this.middlePlatforms.forEach(platform => platform.move())
-    }
-
-    drawMiddlePlatforms() {
-        this.middlePlatforms.forEach(platform => platform.draw())
-    }
-
-    /*addBottomPlatforms() {
-        if(!this.bottomPlatforms.length) {
-            this.bottomPlatforms.push(new Platform(
-                this.ctx,
-                Math.floor(Math.random() * (30 - 10 + 1) + 10),
-                Math.floor(Math.random() * (280 - 230 + 1) + 230),
-                Math.floor(Math.random() * (200 - 100 + 1) + 100),
-                this.bg.speed
-            ))
-        }
-        
-        if (this.bottomPlatforms[this.bottomPlatforms.length - 1].x + this.bottomPlatforms[this.bottomPlatforms.length - 1].width < this.ctx.canvas.width) {
-            this.newBottomPlatform()
-        }
-    }
-    
-    newBottomPlatform() {
-        this.bottomPlatforms.push(new Platform(
-            this.ctx,
-            this.bottomPlatforms[this.bottomPlatforms.length - 1].x + this.bottomPlatforms[this.bottomPlatforms.length - 1].width + this.gapBetweenPlatforms,
-            Math.floor(Math.random() * (280 - 230 + 1) + 230),
-            Math.floor(Math.random() * (200 - 100 + 1) + 100),
-            this.bg.speed
-        ))
-    }
-
-    moveBottomPlatforms() {
-        this.bottomPlatforms.forEach(platform => platform.move())
-    }
-
-    drawBottomPlatforms() {
-        this.bottomPlatforms.forEach(platform => platform.draw())
-    }*/
-
-    checkCollisions() {
-        const platforms = [...this.topPlatforms, ...this.middlePlatforms, ...this.bottomPlatforms]
-        platforms.forEach(platform => {
-            if(this.cat.isReady) {
-                if(this.cat.isColliding(platform)) {
-                    this.cat.y = platform.y - this.cat.height;
-                    this.cat.speedY = 0;
-                    this.cat.jumpingTimes = 0
-                } 
-            }
-        })
     }
 
     onclick(event) {
         this.cat.onclick(event.keyCode)
     }
 
-    // didn't work but u should try to figure it out when ur done with the rest :)
     addPlatforms(typeOfPlatforms, ctx, bg) {
         let y = 0
         const gapBetweenPlatforms = Math.floor(Math.random() * (100 - 75 + 1) + 75)
-        if(typeOfPlatforms === this.topPlatforms) {
+        if(typeOfPlatforms === this.platforms[0]  /*this.topPlatforms*/) {
             y = Math.floor(Math.random() * (80 - 40 + 1) + 40)
-            console.log("slaynt")
-        } else if(typeOfPlatforms === this.middlePlatforms) {
+        } else if(typeOfPlatforms === this.platforms[1] /*this.middlePlatforms*/) {
             y = Math.floor(Math.random() * (180 - 130 + 1) + 130)
-        } else if(typeOfPlatforms === this.bottomPlatforms) {
+        } else if(typeOfPlatforms === this.platforms[2] /*this.bottomPlatforms*/) {
             y = Math.floor(Math.random() * (280 - 220 + 1) + 220)
         }
 
@@ -231,6 +120,19 @@ class Game {
         typeOfPlatforms.forEach(platform => platform.draw())
     }
 
+
+    drawEveryPlatform() {
+        this.platforms.forEach((platformFloor) => {
+            this.addPlatforms(platformFloor, this.ctx, this.bg)
+            this.movePlatforms(platformFloor)
+            this.drawPlatforms(platformFloor)
+            platformFloor.forEach(platform => {
+                this.checkCollisions(platform)
+            })
+        })
+    }
+
+
     checkForGameOver(intervalId) {
         function gameOver() {
             clearInterval(intervalId)
@@ -239,5 +141,42 @@ class Game {
         if(this.cat.y + this.cat.height >= this.canvas.height) {
             gameOver()
         }
+    }
+
+    checkForMovingBg(cat, canvas, background) {
+        if(cat.y < canvas.height / 2 && cat.speedY <= 0) {
+            background.speedY = -cat.speedY
+            background.gravity = cat.gravity
+            background.moveVertically() 
+        }
+    }
+
+    addYarns() {
+        const randomPlatformFloor = Math.floor(Math.random() * this.platforms.length)
+        //const randomPlatform = Math.floor(Math.random() * this.platforms[randomPlatformFloor].length)
+        console.log(this.platforms, randomPlatformFloor)
+        const lastPlatform = this.platforms[randomPlatformFloor][this.platforms[randomPlatformFloor].length - 1]
+        const randomY = lastPlatform.y
+        
+        const randomX = lastPlatform.x
+        const randomXWithWidth = Math.floor(Math.random() * (lastPlatform.width - 0 + 1) + 0)
+
+        this.yarns.push(new Yarn(
+            this.ctx, randomX + randomXWithWidth, randomY - 25, 25, this.bg.speed
+        ))
+        console.log(this.yarns)
+    }
+
+    checkCollisionsYarn() {
+        this.yarns.forEach(yarn => {
+            if(this.cat.isColliding(yarn)) {
+                this.score++
+                this.yarns.splice(this.yarns.indexOf(yarn), 1)
+            }
+        })
+    }
+
+    printScore() {
+
     }
 }
