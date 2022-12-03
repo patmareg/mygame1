@@ -25,6 +25,8 @@ class Cat {
 
         this.jumpingTimes = 0
         this.isJumping = false
+
+        this.magnetified = false
     }
 
     draw() {

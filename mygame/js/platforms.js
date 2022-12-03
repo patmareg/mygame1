@@ -32,4 +32,5 @@ class Platform {
     moveVertically() {
         this.y += this.speedY
     }
+
 }

@@ -8,12 +8,13 @@ class Game {
 
         this.gapBetweenPlatforms = Math.floor(Math.random() * (100 - 75 + 1) + 75)
 
-        this.cat = new Cat(this.ctx, 50, 50, 75)
+        this.cat = new Cat(this.ctx, 50, 50, 65)
         this.catFalling = false
 
         this.bg = new Background(this.ctx, 0)
 
         this.yarns = []
+        this.magnets = []
         this.score = 0
     }
 
@@ -24,9 +25,10 @@ class Game {
             this.draw(count)
             this.move()
             this.addElements(count)
-            this.checkStuff()
+            this.checkStuff(count)
             //this.placeCat(count)
             count++
+            console.log(this.cat.magnetified)
         })
     }
 /*
@@ -77,6 +79,7 @@ class Game {
         }
         this.cat.draw()
         this.yarns.forEach(yarn => yarn.draw())
+        this.magnets.forEach(magnet => magnet.draw())
         this.printScore()
     }
 
@@ -85,17 +88,22 @@ class Game {
         this.bg.move()
         this.cat.move()
         this.yarns.forEach(yarn => yarn.move())
+        this.magnets.forEach(magnet => magnet.move())
     }
 
     addElements(count) {
         if(count % 100 === 0) {
             this.addYarns()
         }
+        if(count % 2500 === 0) {
+            this.addMagnets()
+        }
     }
 
-    checkStuff() {
+    checkStuff(count) {
         this.checkForGameOver(this.intervalId)
         this.checkCollisionsYarn()
+        this.checkCollisionsMagnet(count)
     }
 
     placeCat(count) {
@@ -188,6 +196,22 @@ class Game {
             this.movePlatforms(platformFloor)
             this.drawPlatforms(platformFloor)
             platformFloor.forEach(platform => {
+                if(platform.x + platform.width < 0) {
+                    platformFloor.splice(platformFloor.indexOf(platform), 1)
+                }
+
+                platformFloor.forEach(platform2 => {
+                    if(
+                        platform.y + platform.height >= platform2.y 
+                        && platform.y <= platform2.y + platform2.height
+                        && platform.x <= platform2.x + platform2.width
+                        && platform.x + platform.width >= platform2.x
+                        && platform != platform2
+                    ) {
+                        //platformFloor.splice(platformFloor.indexOf(platform2), 1)
+                    }
+                })
+
                 this.cat.isCollidingPlatform(platform)
                 if(platform.hasBeenJumpedOn === true) {
                     if(this.cat.isJumping) {
@@ -228,6 +252,10 @@ class Game {
                 yarn.speedY = -catSpeedY
                 yarn.moveVertically()
             })
+            this.magnets.forEach(magnet => {
+                magnet.speedY = -catSpeedY
+                magnet.moveVertically()
+            })
             count++
             //cat.speedY = 0
         } /*if (cat.y > canvas.height / 2 && !cat.isJumping) {
@@ -253,6 +281,7 @@ class Game {
                 platformFloor.forEach(platform => platform.speedY = 0)
             })
             this.yarns.forEach(yarn => yarn.speedY = 0)
+            this.magnets.forEach(magnet => magnet.speedY = 0)
         }
     }
 
@@ -276,12 +305,42 @@ class Game {
                 this.score++
                 this.yarns.splice(this.yarns.indexOf(yarn), 1)
             }
+            if(this.cat.magnetified && this.cat.x === yarn.x) {
+                this.score++
+                this.yarns.splice(this.yarns.indexOf(yarn), 1)
+            } 
+        })
+    }
+
+    addMagnets() {
+        const randomPlatformFloor = Math.floor(Math.random() * this.platforms.length)
+        //const randomPlatform = Math.floor(Math.random() * this.platforms[randomPlatformFloor].length)
+        const lastPlatform = this.platforms[randomPlatformFloor][this.platforms[randomPlatformFloor].length - 1]
+        const randomY = lastPlatform.y
+        
+        const randomX = lastPlatform.x
+        const randomXWithWidth = Math.floor(Math.random() * (lastPlatform.width - 0 + 1) + 0)
+
+        this.magnets.push(new Magnet(
+            this.ctx, randomX + randomXWithWidth, randomY - 25, 25, this.bg.speed
+        ))
+    }
+
+    checkCollisionsMagnet(count) {
+        this.magnets.forEach(magnet => {
+            if(this.cat.isColliding(magnet)) {
+                this.cat.magnetified = true
+                this.magnets.splice(this.magnets.indexOf(magnet), 1)
+            }
+            if(count % 1000 === 0) {
+                this.cat.magnetified = false
+            }
         })
     }
 
     printScore() {
         this.ctx.fillStyle = "white"
-        this.ctx.fontStyle = "50px Arial"
+        this.ctx.fontStyle = "75px Arial"
         this.ctx.fillText(`score: ${this.score}`, 20, 20)
     }
 
