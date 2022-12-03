@@ -1,10 +1,11 @@
 class Yarn {
-    constructor(ctx, x, y, width, speed) {
+    constructor(ctx, x, y, width, speed, speedY) {
         this.ctx = ctx
         this.x = x
         this.y = y
         this.width = width
         this.speed = speed
+        this.speedY = speedY
         
         this.img = new Image()
         this.img.src = "images/yarn.png"
@@ -23,5 +24,9 @@ class Yarn {
 
     move() {
         this.x -= this.speed
+    }
+
+    moveVertically() {
+        this.y += this.speedY
     }
 }

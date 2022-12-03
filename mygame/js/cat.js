@@ -45,11 +45,16 @@ class Cat {
 
     
     isCollidingPlatform(obj) {
-        return this.y + this.height >= obj.y 
+        if(this.y + this.height >= obj.y 
             && this.y <= obj.y + obj.height
             && this.x <= obj.x + obj.width
             && this.x + this.width >= obj.x
-            && this.prevY + this.height <= obj.y
+            && this.prevY <= obj.y - this.height - obj.speedY) {
+                this.y = obj.y - this.height - 1;
+                this.speedY = 0;
+                this.jumpingTimes = 0;
+                this.isJumping = false
+            }
     }
 
     isColliding(obj) {

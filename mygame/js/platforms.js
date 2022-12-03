@@ -1,10 +1,10 @@
 class Platform {
-    constructor(ctx, x, y, width, speed) {
+    constructor(ctx, x, y, width, speed, speedY) {
         this.ctx = ctx
         this.x = x
         this.y = y
         this.width = width
-        this.height = 10
+        this.height = 20
         this.minimumVerticalSeparation = 30
         this.minimumHorizontalSeparation = 50
 
@@ -16,6 +16,7 @@ class Platform {
         }
 
         this.speed = speed
+        this.speedY = speedY
     }
 
     draw() {
@@ -26,5 +27,9 @@ class Platform {
 
     move() {
         this.x -= this.speed
+    }
+
+    moveVertically() {
+        this.y += this.speedY
     }
 }

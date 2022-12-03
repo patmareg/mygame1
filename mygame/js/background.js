@@ -1,7 +1,9 @@
 class Background {
-    constructor(ctx, speedY, gravity) {
+    constructor(ctx, speedY) {
         this.ctx = ctx
+
         this.x = 0
+        this.x0 = this.x;
         this.y = 0
         this.width = this.ctx.canvas.width
         this.height = this.ctx.canvas.height
@@ -14,14 +16,17 @@ class Background {
         }
         this.speed = 1
         this.speedY = speedY
-        this.gravity = gravity
+       
     }
 
     draw() {
         if(this.isReady) {
             this.ctx.drawImage(this.img, this.x, this.y, this.width, this.height)
             this.ctx.drawImage(this.img, this.x + this.width, this.y, this.width, this.height)
-            //this.ctx.drawImage(this.img, this.y - this.height, this.y, this.width, this.height)
+            this.ctx.drawImage(this.img, this.x, this.y - this.height, this.width, this.height)
+            this.ctx.drawImage(this.img, this.x + this.width, this.y - this.height, this.width, this.height)
+            this.ctx.drawImage(this.img, this.x, this.y + this.height, this.width, this.height)
+            this.ctx.drawImage(this.img, this.x + this.width, this.y + this.height, this.width, this.height)
         }
     }
 
@@ -34,7 +39,7 @@ class Background {
 
     moveVertically() {
         this.y += this.speedY
-        this.speedY += this.gravity
+
         if(this.y > this.height) {
             this.y = 0
         }
