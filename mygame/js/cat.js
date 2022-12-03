@@ -54,6 +54,10 @@ class Cat {
                 this.speedY = 0;
                 this.jumpingTimes = 0;
                 this.isJumping = false
+
+                if(obj.hasBeenJumpedOn != undefined) {
+                    obj.hasBeenJumpedOn = true
+                }
             }
     }
 

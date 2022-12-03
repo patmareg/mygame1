@@ -9,7 +9,7 @@ class Platform {
         this.minimumHorizontalSeparation = 50
 
         this.img = new Image()
-        this.img.src = "images/test-platform-updated.png"
+        this.img.src = "images/new-test-platform.png"
         this.isReady = false
         this.img.onload = () => {
             this.isReady = true

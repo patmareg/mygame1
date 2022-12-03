@@ -71,7 +71,7 @@ class Game {
 
     draw(count) {
         this.bg.draw()
-        this.drawEveryPlatform()
+        this.drawEveryPlatform(count)
         if(count % 10 === 0) {
             this.cat.walkingSprite()
         }
@@ -112,8 +112,9 @@ class Game {
         this.cat.onclick(event.keyCode)
     }
 
-    addPlatforms(typeOfPlatforms, ctx, bg) {
+    addPlatforms(typeOfPlatforms, ctx, bg, count) {
         let y = 0
+        let type = ""
         const gapBetweenPlatforms = Math.floor(Math.random() * (100 - 75 + 1) + 75)
         if(typeOfPlatforms === this.platforms[0]  /*this.topPlatforms*/) {
             //y = Math.floor(Math.random() * (180 - 130 + 1) + 130)
@@ -128,15 +129,32 @@ class Game {
             y = Math.floor(Math.random() * (455 - 405 + 1) + 405)
         } 
 
+        if(count % 10 === 0) {
+            type = "disappearing"
+        } else {
+            type = "normal"
+        }
+
         function newPlatform() {
-            typeOfPlatforms.push(new Platform(
-                ctx,
-                typeOfPlatforms[typeOfPlatforms.length - 1].x + typeOfPlatforms[typeOfPlatforms.length - 1].width + gapBetweenPlatforms,
-                y,
-                Math.floor(Math.random() * (200 - 100 + 1) + 100),
-                bg.speed,
-                bg.speedY
-            ))
+            if(type === "normal") {
+                typeOfPlatforms.push(new Platform(
+                    ctx,
+                    typeOfPlatforms[typeOfPlatforms.length - 1].x + typeOfPlatforms[typeOfPlatforms.length - 1].width + gapBetweenPlatforms,
+                    y,
+                    Math.floor(Math.random() * (200 - 100 + 1) + 100),
+                    bg.speed,
+                    bg.speedY
+                ))
+            } else {
+                typeOfPlatforms.push(new DisappearingPlatform(
+                    ctx,
+                    typeOfPlatforms[typeOfPlatforms.length - 1].x + typeOfPlatforms[typeOfPlatforms.length - 1].width + gapBetweenPlatforms,
+                    y,
+                    Math.floor(Math.random() * (200 - 100 + 1) + 100),
+                    bg.speed,
+                    bg.speedY
+                ))
+            }
         }
         
         if(!typeOfPlatforms.length) {
@@ -164,13 +182,18 @@ class Game {
     }
 
 
-    drawEveryPlatform() {
+    drawEveryPlatform(count) {
         this.platforms.forEach((platformFloor) => {
-            this.addPlatforms(platformFloor, this.ctx, this.bg)
+            this.addPlatforms(platformFloor, this.ctx, this.bg, count)
             this.movePlatforms(platformFloor)
             this.drawPlatforms(platformFloor)
             platformFloor.forEach(platform => {
                 this.cat.isCollidingPlatform(platform)
+                if(platform.hasBeenJumpedOn === true) {
+                    if(this.cat.isJumping) {
+                        platformFloor.splice(platformFloor.indexOf(platform), 1)
+                    }
+                }
             })
         })
     }
@@ -193,7 +216,6 @@ class Game {
             if(count === 0) {
                 catSpeedY = cat.speedY
             }
-            console.log(catSpeedY)
             background.speedY = -catSpeedY
             background.moveVertically() 
             platforms.forEach(platformFloor => {
@@ -208,7 +230,24 @@ class Game {
             })
             count++
             //cat.speedY = 0
-        } else {
+        } /*if (cat.y > canvas.height / 2 && !cat.isJumping) {
+            if(count === 0) {
+                catSpeedY = cat.speedY
+            }
+            background.speedY = -catSpeedY
+            background.moveVertically() 
+            platforms.forEach(platformFloor => {
+                platformFloor.forEach(platform => {
+                    platform.speedY = -catSpeedY
+                    platform.moveVertically()
+                })
+            })
+            this.yarns.forEach(yarn => {
+                yarn.speedY = -catSpeedY
+                yarn.moveVertically()
+            })
+            count++
+        }*/ else {
             background.speedY = 0
             platforms.forEach(platformFloor => {
                 platformFloor.forEach(platform => platform.speedY = 0)
