@@ -1,10 +1,10 @@
 class Background {
-    constructor(ctx, speedY) {
+    constructor(ctx, x, y, speedY) {
         this.ctx = ctx
 
-        this.x = 0
+        this.x = x
         this.x0 = this.x;
-        this.y = 0
+        this.y = y
         this.width = this.ctx.canvas.width
         this.height = this.ctx.canvas.height
 

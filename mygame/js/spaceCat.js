@@ -19,6 +19,9 @@ class SpaceCat {
             this.isReady = true
             this.height = this.width * (this.img.height/this.totalSpritesY) / (this.img.width/this.totalSpritesX)
         }
+
+        this.prevY = this.y
+        this.gravity = 0.1
     }
 
     draw() {

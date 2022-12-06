@@ -29,7 +29,7 @@ class Cat {
         this.magnetified = false
         this.starified = false
 
-        this.spaceCat = null
+        this.spaceCat = new SpaceCat(this.ctx, this.x, this.y, 80, 3, this.speedY)
     }
 
     draw() {
@@ -87,8 +87,7 @@ class Cat {
         }
     }
 
-    spaceCat() {
-        this.spaceCat = new SpaceCat(this.ctx, this.x, this.y, this.width, 3, this.speedY)
+    setSpaceCat() {
         this.spaceCat.draw()
         this.spaceCat.flyingSprite()
         this.spaceCat.move()

@@ -2,10 +2,11 @@ window.onload = () => {
     startGame()
 }
 
+const startScreen = document.getElementById("start-screen")
 const startBtn = document.getElementById("start-btn")
 
 function createGame() {
-    startBtn.style.display = "none"
+    startScreen.style.display = "none"
     const game = new Game("canvas")
     game.start()
     document.addEventListener("keydown", (event) => {

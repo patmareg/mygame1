@@ -11,11 +11,12 @@ class Game {
         this.cat = new Cat(this.ctx, 50, 50, 65)
         this.catFalling = false
 
-        this.bg = new Background(this.ctx, 0)
+        this.bg = new Background(this.ctx, 0, 0, 0)
 
         this.yarns = []
         this.magnets = []
         this.lightningBolts = []
+        this.stars = []
 
         this.powerUps = []
 
@@ -24,19 +25,65 @@ class Game {
     }
 
     start() {
-       
         let count = 0
         this.intervalId = setInterval(() => {
-            this.clear()
-            this.checkStuff()
-            this.draw(count)
-            this.move()
-            this.addElements(count)
-            this.clearPlatforms()
-            //this.placeCat(count)
-            count++
+            if(this.cat.starified === false) {
+                this.clear()
+                this.checkStuff()
+                this.draw(count)
+                this.move()
+                this.addElements(count)
+                this.clearPlatforms()
+                //this.placeCat(count)
+                count++
+            } else {
+                this.clear()
+
+                this.addElements(count)
+
+                this.bg.draw()
+                this.cat.spaceCat.draw()
+                this.drawPowerUps()
+
+                this.bg.move()
+                this.cat.spaceCat.move()
+                this.powerUps.forEach(powerUp => powerUp.move())
+
+
+                if(count % this.spriteChangeFrequency === 0) {
+                    this.cat.spaceCat.flyingSprite()
+                }
+
+                this.checkStuff()
+                this.printScore()
+                
+                if(count % 1000 === 0) {
+                    this.cat.starified = false
+                }
+
+                count++
+            }
         }, 1000 / 60)
     }
+
+    // start() {
+    //     let count = 0
+    //     this.intervalId = setInterval(() => {
+    //         if(this.cat.starified === false) {
+    //             this.clear()
+    //             this.checkStuff()
+    //             this.draw(count)
+    //             this.move()
+    //             this.addElements(count)
+    //             this.clearPlatforms()
+    //             this.placeCat(count)
+    //             count++
+    //         } else {
+    //             this.newGame = new GameWhenSpaceCat(this.ctx, this.bg.x, this.bg.y)
+    //             this.newGame.start()
+    //         }
+    //     }, 1000 / 60)
+    // }
 
     draw(count) {
         this.bg.draw()
@@ -44,10 +91,6 @@ class Game {
             row.forEach(platform => {
                 platform.draw()
             })
-        } )
-
-        this.platforms.forEach(row => {
-            this.addPlatforms(row, this.ctx, this.bg, count)
         } )
 
         if(count % this.spriteChangeFrequency === 0) {
@@ -70,13 +113,16 @@ class Game {
                 platform.move()
             })
         } )
-       this.moveElementsWhilstJumping(this.cat, this.canvas, this.bg, this.platforms)
+        this.moveElementsWhilstJumping(this.cat, this.canvas, this.bg, this.platforms)
         this.bg.move()
         this.cat.move()
         this.powerUps.forEach(powerUp => powerUp.move())
     }
 
     addElements(count) {
+        this.platforms.forEach(row => {
+            this.addPlatforms(row, this.ctx, this.bg, count)
+        } )
         if(count % 100 === 0) {
             this.addPowerups("yarn")
         }
@@ -85,6 +131,9 @@ class Game {
         }
         if(count % 3000 === 0) {
             this.addPowerups("lightningBolt")
+        }
+        if(count % 4000 === 0) {
+            this.addPowerups("star")
         }
     }
 
@@ -225,7 +274,7 @@ class Game {
             clearInterval(intervalId)
         }
 
-        if(this.cat.y + this.cat.height >= this.canvas.height) {
+        if(this.cat.y + this.cat.height >= this.canvas.height || this.cat.spaceCat.y + this.cat.spaceCat.height >= this.canvas.height) {
             gameOver()
         }
     }
@@ -285,9 +334,22 @@ class Game {
         const randomX = lastPlatform.x
         const randomXWithWidth = Math.floor(Math.random() * (lastPlatform.width - 0 + 1) + 0)
 
-        this.powerUps.push(new PowerUp(
-            this.ctx, randomX + randomXWithWidth, randomY - 25, 25, this.bg.speed, 0, element
-        ));
+        if(this.cat.starified === false) {
+            this.powerUps.push(new PowerUp(
+                this.ctx, randomX + randomXWithWidth, randomY - 25, 25, this.bg.speed, 0, element
+            ));
+        } else {
+            console.log("slay")
+            this.powerUps.push(new PowerUp(
+                this.ctx,
+                this.canvas.width,
+                Math.floor(Math.random() * ((this.canvas.width - 50) - 25 + 1) + 25),
+                25,
+                this.bg.speed,
+                0,
+                element
+            ))
+        }
     }
 
     drawPowerUps() {
@@ -302,7 +364,7 @@ class Game {
 
     checkCollisions() {
         this.powerUps.forEach(powerUp => {
-            if(this.cat.isColliding(powerUp)) {
+            if(this.cat.isColliding(powerUp) || this.cat.spaceCat.isColliding(powerUp)) {
                 if(powerUp.type === "yarn") {
                     this.score++
                     this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
@@ -320,6 +382,11 @@ class Game {
                     this.powerUps.forEach(powerUp => {
                         powerUp.speed = this.bg.speed
                     })
+                    this.platforms.forEach(platformFloor => {
+                        platformFloor.forEach(platform => {
+                            platform.speed = this.bg.speed
+                        })
+                    })
 
                     setTimeout(() => {
                         this.spriteChangeFrequency = 4
@@ -332,15 +399,11 @@ class Game {
                         this.powerUps.forEach(powerUp => {
                             powerUp.speed = this.bg.speed
                         })
-                    }, 1000)
+                    }, 3000)
+                } else if(powerUp.type === "star") {
+                    this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
+                    this.cat.starified = true
                 }
-
-                this.platforms.forEach(platformFloor => {
-                    platformFloor.forEach(platform => {
-                        platform.speed = this.bg.speed
-                    })
-                })
-                powerUp.speed = this.bg.speed
 
                 /*if(this.cat.magnetified && this.cat.x === powerUp.x && powerUp.type === "yarn") {
                     this.score++
@@ -367,6 +430,12 @@ class Game {
         this.ctx.fillStyle = "white"
         this.ctx.fontStyle = "75px Arial"
         this.ctx.fillText(`score: ${this.score}`, 20, 20)
+    }
+
+    stopSpaceCat() {
+        if(this.cat.starified) {
+            setTimeout(this.cat.starified === false, 100)
+        }
     }
 
 }

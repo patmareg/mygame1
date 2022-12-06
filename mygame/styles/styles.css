@@ -3,9 +3,22 @@ canvas {
     margin: 0 auto 0 auto;
 }
 
-button {
+#start-screen > img {
+    width: 1400px;
+    height: 500px;
+    display: block;
+    margin: 0 auto 0 auto;
+}
+
+#start-screen > button {
     width: 150px;
     height: 50px;
+    font-size: 24px;
+    border-radius: 12px;
     background-color: lightgreen;
-
+    position: absolute;
+    top: 250px;
+    left: 650px;
+    display: block;
+    margin: 0 auto 0 auto;
 }
