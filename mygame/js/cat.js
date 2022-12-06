@@ -27,6 +27,9 @@ class Cat {
         this.isJumping = false
 
         this.magnetified = false
+        this.starified = false
+
+        this.spaceCat = null
     }
 
     draw() {
@@ -84,12 +87,24 @@ class Cat {
         }
     }
 
-    onclick(eventCode) {
-        if(eventCode === 32 && this.jumpingTimes < 2) {
+    spaceCat() {
+        this.spaceCat = new SpaceCat(this.ctx, this.x, this.y, this.width, 3, this.speedY)
+        this.spaceCat.draw()
+        this.spaceCat.flyingSprite()
+        this.spaceCat.move()
+    }
+
+    onclick(event) {
+        if(event.keyCode === 32 && this.jumpingTimes < 2) {
+            event.preventDefault()
             this.y -= 1
             this.speedY = -3
             this.jumpingTimes++
             this.isJumping = true
         }
+        if(event.keyCode === 32 && this.starified) {
+            this.spaceCat.onclick(event)
+        }
     }
+
 }

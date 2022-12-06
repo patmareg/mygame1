@@ -15,95 +15,84 @@ class Game {
 
         this.yarns = []
         this.magnets = []
+        this.lightningBolts = []
+
+        this.powerUps = []
+
         this.score = 0
+        this.spriteChangeFrequency = 4
     }
 
     start() {
+       
         let count = 0
         this.intervalId = setInterval(() => {
             this.clear()
+            this.checkStuff()
             this.draw(count)
             this.move()
             this.addElements(count)
-            this.checkStuff(count)
+            this.clearPlatforms()
             //this.placeCat(count)
             count++
-            console.log(this.cat.magnetified)
-        })
-    }
-/*
-    draw() {
-        let count = 0
-        this.intervalId = setInterval(() => {
-            this.clear()
-            count++
-
-            
-            this.bg.move()
-            this.cat.move()
-            this.moveElementsWhilstJumping(this.cat, this.canvas, this.bg, this.platforms)
-            
-            this.bg.draw()
-            this.drawEveryPlatform()
-            this.cat.draw()
-
-            if(count === 1) {
-                this.cat.y = this.platforms[2][0].y - this.cat.height
-            }
-            
-            //this.checkCollisions(this.platforms)
-            if(count % 5 === 0) {
-                this.cat.walkingSprite()
-            }
-
-            if(count % 100 === 0) {
-                this.addYarns()
-            }
-            this.yarns.forEach(yarn => yarn.draw())
-            this.yarns.forEach(yarn => yarn.move())
-
-            this.checkForGameOver(this.intervalId)
-
-            this.checkCollisionsYarn()
-            this.printScore()
-
         }, 1000 / 60)
     }
-*/
 
     draw(count) {
         this.bg.draw()
-        this.drawEveryPlatform(count)
-        if(count % 10 === 0) {
+        this.platforms.forEach(row => {
+            row.forEach(platform => {
+                platform.draw()
+            })
+        } )
+
+        this.platforms.forEach(row => {
+            this.addPlatforms(row, this.ctx, this.bg, count)
+        } )
+
+        if(count % this.spriteChangeFrequency === 0) {
             this.cat.walkingSprite()
         }
         this.cat.draw()
-        this.yarns.forEach(yarn => yarn.draw())
-        this.magnets.forEach(magnet => magnet.draw())
+
+        this.drawPowerUps()
+
+        this.makePlatformsDisappear()
+
+        this.deleteCollidingPlatforms()
+     
         this.printScore()
     }
 
     move() {
-        this.moveElementsWhilstJumping(this.cat, this.canvas, this.bg, this.platforms)
+        this.platforms.forEach(row => {
+            row.forEach(platform => {
+                platform.move()
+            })
+        } )
+       this.moveElementsWhilstJumping(this.cat, this.canvas, this.bg, this.platforms)
         this.bg.move()
         this.cat.move()
-        this.yarns.forEach(yarn => yarn.move())
-        this.magnets.forEach(magnet => magnet.move())
+        this.powerUps.forEach(powerUp => powerUp.move())
     }
 
     addElements(count) {
         if(count % 100 === 0) {
-            this.addYarns()
+            this.addPowerups("yarn")
         }
         if(count % 2500 === 0) {
-            this.addMagnets()
+            this.addPowerups("magnet")
+        }
+        if(count % 3000 === 0) {
+            this.addPowerups("lightningBolt")
         }
     }
 
-    checkStuff(count) {
+    checkStuff() {
         this.checkForGameOver(this.intervalId)
-        this.checkCollisionsYarn()
-        this.checkCollisionsMagnet(count)
+        this.checkCollisions()
+        this.checkCollisionsCatWithPlatforms()
+        this.makeMagnetWork()
     }
 
     placeCat(count) {
@@ -117,7 +106,7 @@ class Game {
     }
 
     onclick(event) {
-        this.cat.onclick(event.keyCode)
+        this.cat.onclick(event)
     }
 
     addPlatforms(typeOfPlatforms, ctx, bg, count) {
@@ -181,38 +170,27 @@ class Game {
         }
     }
 
-    movePlatforms(typeOfPlatforms) {
-        typeOfPlatforms.forEach(platform => platform.move())
-    }
-
-    drawPlatforms(typeOfPlatforms){
-        typeOfPlatforms.forEach(platform => platform.draw())
-    }
-
-
-    drawEveryPlatform(count) {
-        this.platforms.forEach((platformFloor) => {
-            this.addPlatforms(platformFloor, this.ctx, this.bg, count)
-            this.movePlatforms(platformFloor)
-            this.drawPlatforms(platformFloor)
+    clearPlatforms() {
+        this.platforms.forEach(platformFloor => {
             platformFloor.forEach(platform => {
-                if(platform.x + platform.width < 0) {
+                if(platform.X + platform.width < 0) {
                     platformFloor.splice(platformFloor.indexOf(platform), 1)
                 }
+            })
+        })
+    }
 
-                platformFloor.forEach(platform2 => {
-                    if(
-                        platform.y + platform.height >= platform2.y 
-                        && platform.y <= platform2.y + platform2.height
-                        && platform.x <= platform2.x + platform2.width
-                        && platform.x + platform.width >= platform2.x
-                        && platform != platform2
-                    ) {
-                        //platformFloor.splice(platformFloor.indexOf(platform2), 1)
-                    }
-                })
-
+    checkCollisionsCatWithPlatforms() {
+        this.platforms.forEach(platformFloor => {
+            platformFloor.forEach(platform => {
                 this.cat.isCollidingPlatform(platform)
+            })
+        })
+    }
+
+    makePlatformsDisappear() {
+        this.platforms.forEach(platformFloor => {
+            platformFloor.forEach(platform => {
                 if(platform.hasBeenJumpedOn === true) {
                     if(this.cat.isJumping) {
                         platformFloor.splice(platformFloor.indexOf(platform), 1)
@@ -222,6 +200,25 @@ class Game {
         })
     }
 
+    deleteCollidingPlatforms() {
+        this.platforms.forEach(platformFloor => {
+            platformFloor.forEach(platform => {
+                this.platforms.forEach(platformFloor2 => {
+                    platformFloor2.forEach(platform2 => {
+                        if(
+                            platform.y + platform.height >= platform2.y 
+                            && platform.y <= platform2.y + platform2.height
+                            && platform.x <= platform2.x + platform2.width
+                            && platform.x + platform.width >= platform2.x
+                            && platform != platform2
+                        ) {
+                            platformFloor2.splice(platformFloor2.indexOf(platform2), 1)
+                        }
+                    })
+                })
+            })
+        })
+    }
 
     checkForGameOver(intervalId) {
         function gameOver() {
@@ -248,13 +245,9 @@ class Game {
                     platform.moveVertically()
                 })
             })
-            this.yarns.forEach(yarn => {
-                yarn.speedY = -catSpeedY
-                yarn.moveVertically()
-            })
-            this.magnets.forEach(magnet => {
-                magnet.speedY = -catSpeedY
-                magnet.moveVertically()
+            this.powerUps.forEach(powerUp => {
+                powerUp.speedY = -catSpeedY
+                powerUp.moveVertically()
             })
             count++
             //cat.speedY = 0
@@ -280,62 +273,94 @@ class Game {
             platforms.forEach(platformFloor => {
                 platformFloor.forEach(platform => platform.speedY = 0)
             })
-            this.yarns.forEach(yarn => yarn.speedY = 0)
-            this.magnets.forEach(magnet => magnet.speedY = 0)
+            this.powerUps.forEach(powerUp => powerUp.speedY = 0)
         }
     }
 
-    addYarns() {
+    addPowerups(element) {
         const randomPlatformFloor = Math.floor(Math.random() * this.platforms.length)
         //const randomPlatform = Math.floor(Math.random() * this.platforms[randomPlatformFloor].length)
         const lastPlatform = this.platforms[randomPlatformFloor][this.platforms[randomPlatformFloor].length - 1]
         const randomY = lastPlatform.y
-        
         const randomX = lastPlatform.x
         const randomXWithWidth = Math.floor(Math.random() * (lastPlatform.width - 0 + 1) + 0)
 
-        this.yarns.push(new Yarn(
-            this.ctx, randomX + randomXWithWidth, randomY - 25, 25, this.bg.speed
-        ))
+        this.powerUps.push(new PowerUp(
+            this.ctx, randomX + randomXWithWidth, randomY - 25, 25, this.bg.speed, 0, element
+        ));
     }
 
-    checkCollisionsYarn() {
-        this.yarns.forEach(yarn => {
-            if(this.cat.isColliding(yarn)) {
-                this.score++
-                this.yarns.splice(this.yarns.indexOf(yarn), 1)
+    drawPowerUps() {
+        this.powerUps.forEach(powerUp => {
+            if(powerUp.x + powerUp.width >= 0) {
+                powerUp.draw()
+            } else {
+                this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
             }
-            if(this.cat.magnetified && this.cat.x === yarn.x) {
-                this.score++
-                this.yarns.splice(this.yarns.indexOf(yarn), 1)
-            } 
+        })
+    }
+
+    checkCollisions() {
+        this.powerUps.forEach(powerUp => {
+            if(this.cat.isColliding(powerUp)) {
+                if(powerUp.type === "yarn") {
+                    this.score++
+                    this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
+                } else if(powerUp.type === "magnet") {
+                    this.cat.magnetified = true
+                    this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
+                    this.makeMagnetWork()
+                    /*setTimeout(() => {
+                        this.cat.magnetified = false
+                    }, 5000)*/
+                } else if(powerUp.type === "lightningBolt") {
+                    this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
+                    this.spriteChangeFrequency = 2
+                    this.bg.speed = 5
+                    this.powerUps.forEach(powerUp => {
+                        powerUp.speed = this.bg.speed
+                    })
+
+                    setTimeout(() => {
+                        this.spriteChangeFrequency = 4
+                        this.bg.speed = 2
+                        this.platforms.forEach(platformFloor => {
+                            platformFloor.forEach(platform => {
+                                platform.speed = this.bg.speed
+                            })
+                        })
+                        this.powerUps.forEach(powerUp => {
+                            powerUp.speed = this.bg.speed
+                        })
+                    }, 1000)
+                }
+
+                this.platforms.forEach(platformFloor => {
+                    platformFloor.forEach(platform => {
+                        platform.speed = this.bg.speed
+                    })
+                })
+                powerUp.speed = this.bg.speed
+
+                /*if(this.cat.magnetified && this.cat.x === powerUp.x && powerUp.type === "yarn") {
+                    this.score++
+                    this.powerUps.splice(this.powerUps.indexOf(powerUp), 1) 
+                }*/
+            }
         })
     }
 
-    addMagnets() {
-        const randomPlatformFloor = Math.floor(Math.random() * this.platforms.length)
-        //const randomPlatform = Math.floor(Math.random() * this.platforms[randomPlatformFloor].length)
-        const lastPlatform = this.platforms[randomPlatformFloor][this.platforms[randomPlatformFloor].length - 1]
-        const randomY = lastPlatform.y
-        
-        const randomX = lastPlatform.x
-        const randomXWithWidth = Math.floor(Math.random() * (lastPlatform.width - 0 + 1) + 0)
-
-        this.magnets.push(new Magnet(
-            this.ctx, randomX + randomXWithWidth, randomY - 25, 25, this.bg.speed
-        ))
-    }
-
-    checkCollisionsMagnet(count) {
-        this.magnets.forEach(magnet => {
-            if(this.cat.isColliding(magnet)) {
-                this.cat.magnetified = true
-                this.magnets.splice(this.magnets.indexOf(magnet), 1)
-            }
-            if(count % 1000 === 0) {
-                this.cat.magnetified = false
-            }
-        })
+    makeMagnetWork() {
+        if(this.cat.magnetified) {
+            this.powerUps.forEach(powerUp => {
+                if(powerUp.type === "yarn") {
+                    if(powerUp.x === this.cat.x) {
+                        this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
+                        this.score++
+                    }
+                }
+            })
+        }
     }
 
     printScore() {

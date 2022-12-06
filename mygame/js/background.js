@@ -14,7 +14,7 @@ class Background {
         this.img.onload = () => {
             this.isReady = true
         }
-        this.speed = 1
+        this.speed = 2
         this.speedY = speedY
        
     }
