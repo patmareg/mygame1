@@ -22,9 +22,15 @@ class Game {
 
         this.score = 0
         this.spriteChangeFrequency = 4
+
+        this.gameOver = false
+
+        this.backgroundMusic = new Audio("sounds/backgroundTrack.mp3")
     }
 
     start() {
+        this.backgroundMusic.play()
+        this.backgroundMusic.volume = 0.3
         let count = 0
         this.intervalId = setInterval(() => {
             if(this.cat.starified === false) {
@@ -44,6 +50,7 @@ class Game {
                 this.bg.draw()
                 this.cat.spaceCat.draw()
                 this.drawPowerUps()
+                this.drawLittlePowerups()
 
                 this.bg.move()
                 this.cat.spaceCat.move()
@@ -105,6 +112,8 @@ class Game {
         this.deleteCollidingPlatforms()
      
         this.printScore()
+
+        this.drawLittlePowerups()
     }
 
     move() {
@@ -270,12 +279,15 @@ class Game {
     }
 
     checkForGameOver(intervalId) {
-        function gameOver() {
+        function gameOver(score, document) {
             clearInterval(intervalId)
+            const scorePlace = document.getElementById("score")
+            scorePlace.textContent = `your score was ${score}`
         }
 
         if(this.cat.y + this.cat.height >= this.canvas.height || this.cat.spaceCat.y + this.cat.spaceCat.height >= this.canvas.height) {
-            gameOver()
+            gameOver(this.score, document)
+            this.gameOver = true
         }
     }
 
@@ -339,7 +351,6 @@ class Game {
                 this.ctx, randomX + randomXWithWidth, randomY - 25, 25, this.bg.speed, 0, element
             ));
         } else {
-            console.log("slay")
             this.powerUps.push(new PowerUp(
                 this.ctx,
                 this.canvas.width,
@@ -372,9 +383,10 @@ class Game {
                     this.cat.magnetified = true
                     this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
                     this.makeMagnetWork()
-                    /*setTimeout(() => {
+
+                    setTimeout(() => {
                         this.cat.magnetified = false
-                    }, 5000)*/
+                    }, 3000)
                 } else if(powerUp.type === "lightningBolt") {
                     this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
                     this.spriteChangeFrequency = 2
@@ -388,6 +400,8 @@ class Game {
                         })
                     })
 
+                    this.cat.bolted = true
+
                     setTimeout(() => {
                         this.spriteChangeFrequency = 4
                         this.bg.speed = 2
@@ -399,6 +413,7 @@ class Game {
                         this.powerUps.forEach(powerUp => {
                             powerUp.speed = this.bg.speed
                         })
+                        this.cat.bolted = false
                     }, 3000)
                 } else if(powerUp.type === "star") {
                     this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
@@ -436,6 +451,36 @@ class Game {
         if(this.cat.starified) {
             setTimeout(this.cat.starified === false, 100)
         }
+    }
+
+    drawLittlePowerups() {
+        const x = this.canvas.width - 50
+        const y = 25
+        const width = 25
+        const height = 25
+
+        const littleMagnet = new Image
+        littleMagnet.src = "images/magnet.png"
+
+        if(this.cat.magnetified) {
+            this.ctx.drawImage(littleMagnet, x, y, width, height)
+        }
+
+        const littleStar = new Image
+        littleStar.src = "images/star.png"
+
+        if(this.cat.starified) {
+            console.log("SLAYYYY")
+            this.ctx.drawImage(littleStar, x - 50, y, width, height)
+        }
+
+        const littleBolt = new Image
+        littleBolt.src = "images/lightningBolt.png"
+
+        if(this.cat.bolted) {
+            this.ctx.drawImage(littleBolt, x - 75, y, width, height)
+        }
+
     }
 
 }

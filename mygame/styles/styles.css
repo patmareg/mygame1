@@ -22,3 +22,21 @@ canvas {
     display: block;
     margin: 0 auto 0 auto;
 }
+
+#game-over-screen {
+    position: absolute;
+    top: 180px;
+    left: 625px;
+    background-color: lightblue;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-bottom: 25px;
+    text-align: center;
+}
+
+#game-over-screen > button {
+    background-color: lightgreen;
+    border-radius: 12px;
+    font-size: 24px;
+    justify-content: center;
+}

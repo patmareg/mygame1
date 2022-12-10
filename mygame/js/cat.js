@@ -28,6 +28,7 @@ class Cat {
 
         this.magnetified = false
         this.starified = false
+        this.bolted = false
 
         this.spaceCat = new SpaceCat(this.ctx, this.x, this.y, 80, 3, this.speedY)
     }
