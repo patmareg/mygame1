@@ -26,11 +26,15 @@ class Game {
         this.gameOver = false
 
         this.backgroundMusic = new Audio("sounds/backgroundTrack.mp3")
+
+        this.originalBgSpeed = 2
+        this.levelUpSpeed = 0.2
     }
 
     start() {
         this.backgroundMusic.play()
-        this.backgroundMusic.volume = 0.3
+        this.backgroundMusic.loop = true
+        this.backgroundMusic.volume = 0
         let count = 0
         this.intervalId = setInterval(() => {
             if(this.cat.starified === false) {
@@ -64,10 +68,9 @@ class Game {
                 this.checkStuff()
                 this.printScore()
                 
-                if(count % 1000 === 0) {
+                if(count % 10000 === 0) {
                     this.cat.starified = false
                 }
-
                 count++
             }
         }, 1000 / 60)
@@ -132,22 +135,29 @@ class Game {
         this.platforms.forEach(row => {
             this.addPlatforms(row, this.ctx, this.bg, count)
         } )
-        if(count % 100 === 0) {
-            this.addPowerups("yarn")
+        if(this.cat.starified) {
+            if(count % 50 === 0) {
+                this.addPowerups("yarn")
+            }
+        } else {
+            if(count % 100 === 0) {
+                this.addPowerups("yarn")
+            }
         }
-        if(count % 2500 === 0) {
+
+        if(count % 2500 === 0 && count > 500) {
             this.addPowerups("magnet")
         }
-        if(count % 3000 === 0) {
+        if(count % 3000 === 0 && count > 500) {
             this.addPowerups("lightningBolt")
         }
-        if(count % 4000 === 0) {
+        if(count % 4000 === 0 && count > 500) {
             this.addPowerups("star")
         }
     }
 
     checkStuff() {
-        this.checkForGameOver(this.intervalId)
+        this.checkForGameOver()
         this.checkCollisions()
         this.checkCollisionsCatWithPlatforms()
         this.makeMagnetWork()
@@ -278,16 +288,26 @@ class Game {
         })
     }
 
-    checkForGameOver(intervalId) {
-        function gameOver(score, document) {
-            clearInterval(intervalId)
-            const scorePlace = document.getElementById("score")
-            scorePlace.textContent = `your score was ${score}`
-        }
+    executeGameOver() {
+        clearInterval(this.intervalId)
+        const scorePlace = document.getElementById("score")
+        scorePlace.textContent = `your score was ${this.score}`
+        //this.getRanking()
+        this.gameOver = true
+        this.backgroundMusic.pause()
+    }
+
+    checkForGameOver() {
+        // function gameOver(score, document, sound) {
+        //     clearInterval(intervalId)
+        //     const scorePlace = document.getElementById("score")
+        //     scorePlace.textContent = `your score was ${score}`
+        //     this.getRanking() // doesn't work cause it's outside of the scope of this function but slay
+        //     //sound.stop()
+        // }
 
         if(this.cat.y + this.cat.height >= this.canvas.height || this.cat.spaceCat.y + this.cat.spaceCat.height >= this.canvas.height) {
-            gameOver(this.score, document)
-            this.gameOver = true
+           this.executeGameOver()
         }
     }
 
@@ -382,11 +402,10 @@ class Game {
                 } else if(powerUp.type === "magnet") {
                     this.cat.magnetified = true
                     this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
-                    this.makeMagnetWork()
 
                     setTimeout(() => {
                         this.cat.magnetified = false
-                    }, 3000)
+                    }, 5000)
                 } else if(powerUp.type === "lightningBolt") {
                     this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
                     this.spriteChangeFrequency = 2
@@ -404,7 +423,7 @@ class Game {
 
                     setTimeout(() => {
                         this.spriteChangeFrequency = 4
-                        this.bg.speed = 2
+                        this.bg.speed = this.originalBgSpeed
                         this.platforms.forEach(platformFloor => {
                             platformFloor.forEach(platform => {
                                 platform.speed = this.bg.speed
@@ -414,7 +433,7 @@ class Game {
                             powerUp.speed = this.bg.speed
                         })
                         this.cat.bolted = false
-                    }, 3000)
+                    }, 5000)
                 } else if(powerUp.type === "star") {
                     this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
                     this.cat.starified = true
@@ -432,7 +451,7 @@ class Game {
         if(this.cat.magnetified) {
             this.powerUps.forEach(powerUp => {
                 if(powerUp.type === "yarn") {
-                    if(powerUp.x === this.cat.x) {
+                    if(powerUp.x < this.cat.x + this.cat.width && powerUp.x + powerUp.width > this.cat.x) {
                         this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
                         this.score++
                     }
@@ -443,13 +462,13 @@ class Game {
 
     printScore() {
         this.ctx.fillStyle = "white"
-        this.ctx.fontStyle = "75px Arial"
+        this.ctx.font = "15px Arial"
         this.ctx.fillText(`score: ${this.score}`, 20, 20)
     }
 
     stopSpaceCat() {
         if(this.cat.starified) {
-            setTimeout(this.cat.starified === false, 100)
+            setTimeout(this.cat.starified === false, 10000)
         }
     }
 
@@ -470,7 +489,6 @@ class Game {
         littleStar.src = "images/star.png"
 
         if(this.cat.starified) {
-            console.log("SLAYYYY")
             this.ctx.drawImage(littleStar, x - 50, y, width, height)
         }
 
@@ -478,9 +496,17 @@ class Game {
         littleBolt.src = "images/lightningBolt.png"
 
         if(this.cat.bolted) {
-            this.ctx.drawImage(littleBolt, x - 75, y, width, height)
+            this.ctx.drawImage(littleBolt, x - 100, y, width, height)
         }
 
     }
 
+    // getRanking() {
+    //     let scores = localStorage.getItem("scores").split(" ")
+    //     const name = document.getElementById("name-input").value
+    //     scores.push([name, this.score])
+
+    //     localStorage.setItem("scores", scores)
+    //     console.log(localStorage)
+    // }
 }

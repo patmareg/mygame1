@@ -6,25 +6,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>my game :)</title>
     <link rel="stylesheet" href="styles/styles.css" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Press+Start+2P">
 </head>
 <body>
     <div id="start-screen">
         <img src="images/background.jpg"/>
-        <button id="start-btn">start</button>
+        <h1>GATITO CÓSMICO</h1>
+        <div id="start-screen-btns">
+            <button id="rules-btn">RULES</button>
+            <button id="start-btn">START</button>
+        </div>
     </div>
+
+    <div id="rules-screen">
+        <img src="images/background.jpg" id="background-img"/>
+        <div>
+            <h1>RULES</h2>
+            <p>DON'T FALL!</p>
+            <ul>
+                <li>
+                    <img src="images/yarn.png"/>
+                    <p><b>YARN</b>: score +1</p>
+                </li>
+                <li>
+                    <img src="images/disappearing-platform.png"/>
+                    <p><b>DISAPPEARING PLATFORMS</b>: jump on them and they'll disappear</p>
+                </li>
+                <li>
+                    <img src="images/lightningBolt.png"/>
+                    <p><b>LIGHTNING BOLT</b>: get super speed</p>
+                </li>
+                <li>
+                    <img src="images/magnet.png"/>
+                    <p><b>MAGNET</b>: attract all of the yarn near you</p>
+                </li>
+                <li>
+                    <img src="images/star.png"/>
+                    <p><b>STAR</b>: become a rocket and try to get yarn</p>
+                </li>
+            </ul>
+            <button id="go-back-from-rules-btn">GO BACK</button>
+        </div>
+    </div>
+
     <!--<canvas id="canvas" width="730" height="325"></canvas>-->
     <canvas id="canvas" width="1400" height="500"></canvas>
+
+    <form method="post" id="get-name-form">
+        <input type="text" placeholder="enter your name" id="name-input"/>
+        <button type="submit" id="save-btn">save</button>
+    </form>
 
     <div id="game-over-screen">
         <h1>GAME OVER</h1>
         <h2 id="score"></h2>
         <h2>better luck next time</h2>
-        <button id="restart-btn">restart</button>
+        <button id="restart-btn">RESTART</button>
+        <button id="ranking-btn">SAVE</button>
+    </div>
+
+    <div id="ranking">
+        <h2>RANKING</h2>
+        <p id="place1">-</p>
+        <p id="place2">-</p>
+        <p id="place3">-</p>
+        <p id="place4">-</p>
+        <p id="place5">-</p>
+        <button id="go-back-btn">GO BACK</button>
     </div>
     <script type="text/javascript" src="js/spaceCat.js"></script>
-    <script type="text/javascript" src="js/star.js"></script>
-    <script type="text/javascript" src="js/magnet.js"></script>
-    <script type="text/javascript" src="js/yarn.js"></script>
+    <script type="text/javascript" src="js/powerUp.js"></script>
     <script type="text/javascript" src="js/cat.js"></script>
     <script type="text/javascript" src="js/disappearingPlatform.js"></script>
     <script type="text/javascript" src="js/platforms.js"></script>

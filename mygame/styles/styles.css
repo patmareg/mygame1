@@ -1,6 +1,27 @@
+/*@font-face {
+    font-family: "joystixMonospace";
+    src: url("fonts/joystixMonospace.ttf");
+}*/
+
+body {
+    font-family: 'Press Start 2P', serif;
+}
+
 canvas {
-    display: block;
-    margin: 0 auto 0 auto;
+    font-family: 'Press Start 2P', serif;
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    transform: translate(50%, -50%);
+    z-index: -1;
+}
+
+#start-screen, #game-over-screen {
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    transform: translate(50%, -50%);
+    z-index: 1;
 }
 
 #start-screen > img {
@@ -10,23 +31,43 @@ canvas {
     margin: 0 auto 0 auto;
 }
 
-#start-screen > button {
+#start-screen-btns {
+    position: absolute;
+    top: 65%;
+    right: 50%;
+    transform: translate(50%, -50%);
+}
+
+#start-screen-btns > button {
+    font-family: 'Press Start 2P', serif;
     width: 150px;
     height: 50px;
     font-size: 24px;
     border-radius: 12px;
     background-color: lightgreen;
-    position: absolute;
+    /* position: absolute;
     top: 250px;
     left: 650px;
     display: block;
-    margin: 0 auto 0 auto;
+    margin: 0 auto 0 auto; */
+    /* position: absolute;
+    top: 65%;
+    right: 50%;
+    transform: translate(50%, -50%); */
+}
+
+#start-screen > h1 {
+    color: lightblue;
+    position: absolute;
+    top: 25%;
+    right: 50%;
+    transform: translate(50%, -50%);
+    font-size: 90px;
+    width: max-content;
 }
 
 #game-over-screen {
-    position: absolute;
-    top: 180px;
-    left: 625px;
+    border-radius: 12px;
     background-color: lightblue;
     padding-left: 25px;
     padding-right: 25px;
@@ -35,8 +76,108 @@ canvas {
 }
 
 #game-over-screen > button {
+    font-family: 'Press Start 2P', serif;
     background-color: lightgreen;
+    border-radius: 8px;
+    padding: 10px 15px 10px 15px;
+    font-size: 32px;
+    justify-content: center;
+}
+
+#get-name-form {
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    transform: translate(50%, -50%);
+}
+
+#get-name-form > input {
+    font-family: 'Press Start 2P', serif;
+    height: 40px;
+    padding-left: 20px;
     border-radius: 12px;
-    font-size: 24px;
+    width: 300px;
+}
+
+#get-name-form > button {
+    border-radius: 12px;
+    padding: 13px 25px 13px 25px;
+    font-family: 'Press Start 2P';
+    background-color: lightgreen;
+}
+
+#ranking {
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    transform: translate(50%, -50%);
+    border-radius: 12px;
+    background-color: lightblue;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-bottom: 25px;
+    text-align: center;
+}
+
+#ranking > button {
+    font-family: 'Press Start 2P', serif;
+    background-color: lightgreen;
+    border-radius: 8px;
+    padding: 10px 15px 10px 15px;
+    font-size: 32px;
+    justify-content: center;
+}
+
+
+#background-img {
+    width: 1400px;
+    height: 500px;
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    transform: translate(50%, -50%);
+    z-index: -1;
+}
+
+#rules-screen {
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    transform: translate(50%, -50%);
+    height: 500px;
+}
+
+#rules-screen > div {
+    border-radius: 12px;
+    background-color: lightcyan;
+    margin-top: 5px;
+    padding-top: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 15px;
+    text-align: center;
+}
+
+#rules-screen > div > ul {
+    z-index: 1;
+    list-style: none;
+}
+
+#rules-screen > div > ul > li {
+    display: flex;
+    gap: 10px;
+}
+
+#rules-screen > div > ul > li > img {
+    height: 40px;
+    width: 40px;
+}
+
+#rules-screen > div > button {
+    font-family: 'Press Start 2P', serif;
+    background-color: lightgreen;
+    border-radius: 8px;
+    padding: 10px 15px 10px 15px;
+    font-size: 32px;
     justify-content: center;
 }
