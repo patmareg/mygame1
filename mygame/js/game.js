@@ -18,6 +18,9 @@ class Game {
         this.lightningBolts = []
         this.stars = []
 
+        this.dogs = []
+        this.dogSpeed = -5
+
         this.powerUps = []
 
         this.score = 0
@@ -29,6 +32,8 @@ class Game {
 
         this.originalBgSpeed = 2
         this.levelUpSpeed = 0.2
+
+        this.rainbows = []
     }
 
     start() {
@@ -37,6 +42,7 @@ class Game {
         this.backgroundMusic.volume = 0
         let count = 0
         this.intervalId = setInterval(() => {
+          
             if(this.cat.starified === false) {
                 this.clear()
                 this.checkStuff()
@@ -44,6 +50,9 @@ class Game {
                 this.move()
                 this.addElements(count)
                 this.clearPlatforms()
+                if(count % 2500 === 0) {
+                    this.dogSpeed--
+                }
                 //this.placeCat(count)
                 count++
             } else {
@@ -97,16 +106,27 @@ class Game {
 
     draw(count) {
         this.bg.draw()
+        // rainbowCanvas.rainbow.x = this.cat.x;
+        // rainbowCanvas.rainbow.y = this.cat.y;
+        // rainbowCanvas.rainbow.draw()
+
         this.platforms.forEach(row => {
             row.forEach(platform => {
                 platform.draw()
             })
         } )
+        
+        this.rainbows.forEach(rainbow => rainbow.draw())
 
         if(count % this.spriteChangeFrequency === 0) {
             this.cat.walkingSprite()
         }
         this.cat.draw()
+
+        if(count % this.spriteChangeFrequency === 0) {
+            this.dogs.forEach(dog => dog.walkingSprite())
+        }
+        this.drawDogs()
 
         this.drawPowerUps()
 
@@ -129,6 +149,14 @@ class Game {
         this.bg.move()
         this.cat.move()
         this.powerUps.forEach(powerUp => powerUp.move())
+        this.moveDogs()
+        this.rainbows.forEach(rainbow => {
+            if(rainbow.x + rainbow.width >= 0) {
+                rainbow.x--
+            } else {
+                this.rainbows.splice(this.rainbows.indexOf(rainbow), 1)
+            }
+        })
     }
 
     addElements(count) {
@@ -148,12 +176,20 @@ class Game {
         if(count % 2500 === 0 && count > 500) {
             this.addPowerups("magnet")
         }
+        
         if(count % 3000 === 0 && count > 500) {
             this.addPowerups("lightningBolt")
         }
+        
         if(count % 4000 === 0 && count > 500) {
             this.addPowerups("star")
         }
+      
+        if(count % 1000 === 0 && this.platforms.some(floor => floor.length >= 6)) {
+            this.addDogs()
+        }
+
+        this.rainbows.push(new Rainbow(this.ctx, this.cat.x, this.cat.y, 5))
     }
 
     checkStuff() {
@@ -252,6 +288,7 @@ class Game {
         this.platforms.forEach(platformFloor => {
             platformFloor.forEach(platform => {
                 this.cat.isCollidingPlatform(platform)
+                this.dogs.forEach(dog => dog.isCollidingPlatform(platform))
             })
         })
     }
@@ -360,7 +397,6 @@ class Game {
 
     addPowerups(element) {
         const randomPlatformFloor = Math.floor(Math.random() * this.platforms.length)
-        //const randomPlatform = Math.floor(Math.random() * this.platforms[randomPlatformFloor].length)
         const lastPlatform = this.platforms[randomPlatformFloor][this.platforms[randomPlatformFloor].length - 1]
         const randomY = lastPlatform.y
         const randomX = lastPlatform.x
@@ -445,6 +481,11 @@ class Game {
                 }*/
             }
         })
+        this.dogs.forEach(dog => {
+            if(dog.isColliding(this.cat)) {
+                this.executeGameOver()
+            }
+        })
     }
 
     makeMagnetWork() {
@@ -461,9 +502,11 @@ class Game {
     }
 
     printScore() {
-        this.ctx.fillStyle = "white"
-        this.ctx.font = "15px Arial"
-        this.ctx.fillText(`score: ${this.score}`, 20, 20)
+        const scoreText = document.getElementById("total-score")
+        scoreText.textContent = this.score
+        // this.ctx.fillStyle = "white"
+        // this.ctx.font = "15px Arial"
+        // this.ctx.fillText(`score: ${this.score}`, 20, 20)
     }
 
     stopSpaceCat() {
@@ -501,12 +544,23 @@ class Game {
 
     }
 
-    // getRanking() {
-    //     let scores = localStorage.getItem("scores").split(" ")
-    //     const name = document.getElementById("name-input").value
-    //     scores.push([name, this.score])
+    addDogs() {
+        const randomPlatformFloor = Math.floor(Math.random() * this.platforms.length)
+        const lastPlatform = this.platforms[randomPlatformFloor][this.platforms[randomPlatformFloor].length - 1]
+        const randomY = lastPlatform.y
+        const randomX = lastPlatform.x
+        const randomXWithWidth = Math.floor(Math.random() * (lastPlatform.width - 0 + 1) + 0)
+        console.log(lastPlatform, randomXWithWidth, randomX,randomY, this.dogSpeed, 'entro')
+        this.dogs.push(new Dog(
+            this.ctx, randomX + randomXWithWidth, randomY - 25, 75, this.dogSpeed, 0
+        ))
+    }
 
-    //     localStorage.setItem("scores", scores)
-    //     console.log(localStorage)
-    // }
+    drawDogs() {
+        this.dogs.forEach(dog => dog.draw())
+    }
+
+    moveDogs() {
+        this.dogs.forEach(dog => dog.move())
+    }
 }

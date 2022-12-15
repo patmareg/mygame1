@@ -148,10 +148,11 @@ canvas {
 }
 
 #rules-screen > div {
+    font-size: 14px;
     border-radius: 12px;
     background-color: lightcyan;
     margin-top: 5px;
-    padding-top: 10px;
+    padding-top: 17px;
     padding-left: 20px;
     padding-right: 20px;
     padding-bottom: 15px;
@@ -164,6 +165,7 @@ canvas {
 }
 
 #rules-screen > div > ul > li {
+    padding-top: 5px;
     display: flex;
     gap: 10px;
 }
@@ -178,6 +180,18 @@ canvas {
     background-color: lightgreen;
     border-radius: 8px;
     padding: 10px 15px 10px 15px;
-    font-size: 32px;
+    font-size: 24px;
     justify-content: center;
+}
+
+
+.custom-div > div {
+    color: white;
+    position: absolute;
+    top: 50%;
+    transform: translate(50%, -50%);
+    height: 500px;
+    pointer-events: none;
+    margin-top: 20px;
+    margin-left: 20px;
 }

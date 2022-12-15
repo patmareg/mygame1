@@ -1,11 +1,9 @@
-class SpaceCat {
+class Dog {
     constructor(ctx, x, y, width, speed, speedY) {
         this.ctx = ctx
         this.x = x
         this.y = y
         this.width = width
-        this.speed = speed
-        this.speedY = speedY
 
         this.totalSpritesX = 4
         this.totalSpritesY = 1
@@ -13,14 +11,17 @@ class SpaceCat {
         this.spriteY = 0
 
         this.img = new Image()
-        this.img.src = "images/spaceship-cat.png"
+        this.img.src = "images/dog-update.png"
         this.isReady = false
         this.img.onload = () => {
             this.isReady = true
-            this.height = this.width * (this.img.height/this.totalSpritesY) / (this.img.width/this.totalSpritesX)
+            this.height = this.width * (this.img.height / this.totalSpritesY) / (this.img.width / this.totalSpritesX)
         }
 
         this.prevY = this.y
+
+        this.speed = speed
+        this.speedY = speedY
         this.gravity = 0.1
     }
 
@@ -40,12 +41,15 @@ class SpaceCat {
         }
     }
 
-    flyingSprite() {
-        if(this.spriteX < this.totalSpritesX - 1) {
-            this.spriteX++
-        } else {
-            this.spriteX = 0
-        }
+    isCollidingPlatform(obj) {
+        if(this.y + this.height >= obj.y 
+            && this.y <= obj.y + obj.height
+            && this.x <= obj.x + obj.width
+            && this.x + this.width >= obj.x
+            && this.prevY <= obj.y - this.height - obj.speedY) {
+                this.y = obj.y - this.height - 1;
+                this.speedY = 0;
+            }
     }
 
     isColliding(obj) {
@@ -56,19 +60,17 @@ class SpaceCat {
     }
 
     move() {
+        this.x += this.speed
         this.prevY = this.y
         this.y += this.speedY
         this.speedY += this.gravity
-        if(this.x < 0) {
-            this.x = 0
-        }
     }
 
-    onclick(event) {
-        if(event.keyCode === 32) {
-            event.preventDefault()
-            this.y -= 1
-            this.speedY = -3
+    walkingSprite() {
+        if(this.spriteX < this.totalSpritesX - 1) {
+            this.spriteX++
+        } else {
+            this.spriteX = 0
         }
     }
 }

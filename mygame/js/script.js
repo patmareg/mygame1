@@ -32,19 +32,27 @@ let game;
 function createGame() {
     startScreen.style.display = "none"
     form.style.display = "none"
+
+    // rainbowCanvas = new RainbowCanvas("rainbow-canvas")
+  
+
+    // rainbowCanvas.game = game
     game = new Game("canvas")
     game.start()
     document.addEventListener("keydown", (event) => {
         game.onclick(event)
     })
 
+    let count = 0
+
     setInterval(() => {
-        if(game.gameOver) {
+        if (game.gameOver) {
             // gameScreen.style.display = "none"
             gameOverScreen.style.display = "block"
             game.gameOver = false
             score = game.score
         }
+        count++
     }, 1000 / 60)
 }
 
@@ -56,7 +64,7 @@ function prepareGame() {
 }
 
 function startGame() {
-    startBtn.onclick = function() {
+    startBtn.onclick = function () {
         createGame()
     }
 }
@@ -64,14 +72,14 @@ function startGame() {
 function waitForRestart() {
     restartBtn.addEventListener("click", () => {
         window.location.reload()
-    })    
+    })
 }
 
 function waitForRanking() {
     // form.submit(function(event){
     //     event.preventDefault()
     // })
- 
+
     formButton.addEventListener("click", (event) => {
         event.preventDefault();
         const name = input.value;
@@ -81,7 +89,7 @@ function waitForRanking() {
             let currentScore = window.localStorage.getItem('score');
             if (currentScore) {
                 currentScore = JSON.parse(currentScore);
-                currentScore.push({name, score});
+                currentScore.push({ name, score });
                 currentScore.sort((player1, player2) => {
                     return player2.score - player1.score
                 })
@@ -90,20 +98,20 @@ function waitForRanking() {
                 currentScore.forEach(player => {
                     count++
                     console.log(player)
-                    if(count <= 5) {
+                    if (count <= 5) {
                         document.getElementById(`place${count}`).textContent = `${player.name}: ${player.score}`
                     }
                 })
                 window.localStorage.setItem('score', JSON.stringify(currentScore))
                 form.style.display = "none"
                 ranking.style.display = "block"
-                
+
             } else {
-                window.localStorage.setItem('score', JSON.stringify([{name, score}]))
+                window.localStorage.setItem('score', JSON.stringify([{ name, score }]))
                 form.style.display = "none"
                 ranking.style.display = "block"
                 document.getElementById("place1").textContent = `${name}: ${score}`
-            }  
+            }
         }
     })
 

@@ -45,14 +45,23 @@
                     <img src="images/star.png"/>
                     <p><b>STAR</b>: become a rocket and try to get yarn</p>
                 </li>
+                <li>
+                    <img src="images/dog-for-rules-screen.png"/>
+                    <p><b>KILLER DOG</b>: kills you</p>
+                </li>
             </ul>
             <button id="go-back-from-rules-btn">GO BACK</button>
         </div>
     </div>
 
     <!--<canvas id="canvas" width="730" height="325"></canvas>-->
-    <canvas id="canvas" width="1400" height="500"></canvas>
+    <div class="custom-div">
+        <canvas id="canvas" width="1400" height="500"></canvas>
+        <div>score: <span id="total-score">0</span></div>
+    </div>
 
+    <canvas id="rainbow-canvas" width="1400" height="500"></canvas>
+  
     <form method="post" id="get-name-form">
         <input type="text" placeholder="enter your name" id="name-input"/>
         <button type="submit" id="save-btn">save</button>
@@ -77,10 +86,12 @@
     </div>
     <script type="text/javascript" src="js/spaceCat.js"></script>
     <script type="text/javascript" src="js/powerUp.js"></script>
+    <script type="text/javascript" src="js/dog.js"></script>
     <script type="text/javascript" src="js/cat.js"></script>
     <script type="text/javascript" src="js/disappearingPlatform.js"></script>
     <script type="text/javascript" src="js/platforms.js"></script>
     <script type="text/javascript" src="js/background.js"></script>
+    <script type="text/javascript" src="js/rainbow.js"></script> 
     <script type="text/javascript" src="js/game.js"></script>
     <script type="text/javascript" src="js/script.js"></script>
 </body>
