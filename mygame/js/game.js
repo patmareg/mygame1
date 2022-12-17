@@ -588,6 +588,8 @@ class Game {
             this.rocketSound.play()
             this.rocketSound.loop = true
             this.rocketSound.volume = 0.8
+        } else {
+            this.rocketSound.pause()
         }
     }
 }
