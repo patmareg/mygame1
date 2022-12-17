@@ -179,15 +179,15 @@ class Game {
             }
         }
 
-        if(count % 2500 === 0 && count > 500) {
+        if(count % 1500 === 0 && count > 500) {
             this.addPowerups("magnet")
         }
         
-        if(count % 3000 === 0 && count > 500) {
+        if(count % 2000 === 0 && count > 500) {
             this.addPowerups("lightningBolt")
         }
         
-        if(count % 4000 === 0 && count > 500) {
+        if(count % 3500 === 0 && count > 500) {
             this.addPowerups("star")
         }
       
@@ -565,7 +565,7 @@ class Game {
 
     addDogs() {
         const randomPlatformFloor = Math.floor(Math.random() * this.platforms.length)
-        const lastPlatform = this.platforms[randomPlatformFloor][this.platforms[randomPlatformFloor].length - 1]
+        const lastPlatform = this.platforms[0][this.platforms[0].length - 1]
         const randomY = lastPlatform.y
         const randomX = lastPlatform.x
         const randomXWithWidth = Math.floor(Math.random() * (lastPlatform.width - 0 + 1) + 0)
