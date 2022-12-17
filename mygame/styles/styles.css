@@ -162,6 +162,7 @@ canvas {
 #rules-screen > div > ul {
     z-index: 1;
     list-style: none;
+    text-align: left;
 }
 
 #rules-screen > div > ul > li {
@@ -184,7 +185,6 @@ canvas {
     justify-content: center;
 }
 
-
 .custom-div > div {
     color: white;
     position: absolute;
@@ -193,5 +193,29 @@ canvas {
     height: 500px;
     pointer-events: none;
     margin-top: 20px;
-    margin-left: 20px;
+    margin-left: 80px;
 }
+
+/* #score-and-pause {
+    margin-left: 10px;
+    display: flex;
+    gap: 25px;
+    align-items: baseline;
+} */
+
+
+/* #pause > img {
+    height: 25px;
+    width: 25px;
+}
+
+#pause {
+    background-color: lightgreen;
+    height: 25px;
+    padding-left: 2.5px;
+    padding-right: 2.5px;
+    padding-top: 2.5px;
+    padding-bottom: 27px;
+    border-radius: 5px;
+    z-index: -1;
+} */

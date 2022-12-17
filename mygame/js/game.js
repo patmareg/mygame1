@@ -28,7 +28,11 @@ class Game {
 
         this.gameOver = false
 
-        this.backgroundMusic = new Audio("sounds/backgroundTrack.mp3")
+        this.backgroundMusic = new Audio("sounds/backgroundTrack2.mp3")
+        this.gameOverMusic = new Audio("sounds/gameOverSound.wav")
+        this.yarnSound = new Audio("sounds/yarnSound.wav")
+        this.magnetSound = new Audio("sounds/magnetSound.wav")
+        this.rocketSound = new Audio("sounds/rocketSound.wav")
 
         this.originalBgSpeed = 2
         this.levelUpSpeed = 0.2
@@ -39,7 +43,7 @@ class Game {
     start() {
         this.backgroundMusic.play()
         this.backgroundMusic.loop = true
-        this.backgroundMusic.volume = 0
+        this.backgroundMusic.volume = 0.3
         let count = 0
         this.intervalId = setInterval(() => {
           
@@ -53,9 +57,11 @@ class Game {
                 if(count % 2500 === 0) {
                     this.dogSpeed--
                 }
+                this.playRocketMusic()
                 //this.placeCat(count)
                 count++
             } else {
+                this.playRocketMusic()
                 this.clear()
 
                 this.addElements(count)
@@ -77,7 +83,7 @@ class Game {
                 this.checkStuff()
                 this.printScore()
                 
-                if(count % 10000 === 0) {
+                if(count % 7500 === 0) {
                     this.cat.starified = false
                 }
                 count++
@@ -185,11 +191,13 @@ class Game {
             this.addPowerups("star")
         }
       
-        if(count % 1000 === 0 && this.platforms.some(floor => floor.length >= 6)) {
+        if(count % 1000 === 0 && this.platforms.some(floor => floor.length >= 6) && !this.cat.bolted) {
             this.addDogs()
         }
 
-        this.rainbows.push(new Rainbow(this.ctx, this.cat.x, this.cat.y, 5))
+        // if(count % 2 === 0) {
+            this.rainbows.push(new Rainbow(this.ctx, this.cat.x - 15, this.cat.y, 25))
+        // }
     }
 
     checkStuff() {
@@ -332,6 +340,9 @@ class Game {
         //this.getRanking()
         this.gameOver = true
         this.backgroundMusic.pause()
+        this.rocketSound.pause()
+        this.gameOverMusic.play()
+        this.gameOverMusic.volume = 0.3
     }
 
     checkForGameOver() {
@@ -433,16 +444,21 @@ class Game {
         this.powerUps.forEach(powerUp => {
             if(this.cat.isColliding(powerUp) || this.cat.spaceCat.isColliding(powerUp)) {
                 if(powerUp.type === "yarn") {
+                    this.yarnSound.play()
+                    this.yarnSound.volume = 0.9
                     this.score++
                     this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
                 } else if(powerUp.type === "magnet") {
                     this.cat.magnetified = true
+                    this.magnetSound.play()
+                    this.magnetSound.volume = 0.7
                     this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
 
                     setTimeout(() => {
                         this.cat.magnetified = false
                     }, 5000)
                 } else if(powerUp.type === "lightningBolt") {
+                    this.backgroundMusic.playbackRate = 1.5
                     this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
                     this.spriteChangeFrequency = 2
                     this.bg.speed = 5
@@ -458,6 +474,7 @@ class Game {
                     this.cat.bolted = true
 
                     setTimeout(() => {
+                        this.backgroundMusic.playbackRate = 1
                         this.spriteChangeFrequency = 4
                         this.bg.speed = this.originalBgSpeed
                         this.platforms.forEach(platformFloor => {
@@ -493,6 +510,8 @@ class Game {
             this.powerUps.forEach(powerUp => {
                 if(powerUp.type === "yarn") {
                     if(powerUp.x < this.cat.x + this.cat.width && powerUp.x + powerUp.width > this.cat.x) {
+                        this.yarnSound.play()
+                        this.yarnSound.volume = 0.7
                         this.powerUps.splice(this.powerUps.indexOf(powerUp), 1)
                         this.score++
                     }
@@ -562,5 +581,13 @@ class Game {
 
     moveDogs() {
         this.dogs.forEach(dog => dog.move())
+    }
+
+    playRocketMusic() {
+        if(this.cat.starified) {
+            this.rocketSound.play()
+            this.rocketSound.loop = true
+            this.rocketSound.volume = 0.8
+        }
     }
 }

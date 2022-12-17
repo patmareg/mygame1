@@ -23,7 +23,7 @@
         <img src="images/background.jpg" id="background-img"/>
         <div>
             <h1>RULES</h2>
-            <p>DON'T FALL!</p>
+            <p>DON'T FALL! (press space to jump)</p>
             <ul>
                 <li>
                     <img src="images/yarn.png"/>
@@ -55,12 +55,17 @@
     </div>
 
     <!--<canvas id="canvas" width="730" height="325"></canvas>-->
-    <div class="custom-div">
+    <div class="custom-div" id="canvas-div">
         <canvas id="canvas" width="1400" height="500"></canvas>
-        <div>score: <span id="total-score">0</span></div>
+        <div id="score-and-pause">
+            <div>score: <span id="total-score">0</span></div>
+            <!-- <button id="pause">
+                <img src="images/pauseImage.png" id="pause-img"/>
+            </button> -->
+        </div>
     </div>
 
-    <canvas id="rainbow-canvas" width="1400" height="500"></canvas>
+    <!-- <canvas id="rainbow-canvas" width="1400" height="500"></canvas> -->
   
     <form method="post" id="get-name-form">
         <input type="text" placeholder="enter your name" id="name-input"/>

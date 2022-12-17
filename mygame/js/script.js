@@ -1,6 +1,7 @@
 window.onload = () => {
     waitForRestart()
     waitForRanking()
+    // waitForPause()
     prepareGame()
     startGame()
 }
@@ -12,7 +13,9 @@ const rulesScreen = document.getElementById("rules-screen")
 const rulesBtn = document.getElementById("rules-btn")
 const goBackFromRulesBtn = document.getElementById("go-back-from-rules-btn")
 
-const gameScreen = document.getElementById("canvas")
+// const gameScreen = document.getElementById("canvas")
+const gameScreen = document.getElementById("canvas-div")
+const pauseBtn = document.getElementById("pause")
 
 const gameOverScreen = document.getElementById("game-over-screen")
 
@@ -30,6 +33,10 @@ let score = 0
 let game;
 
 function createGame() {
+    document.addEventListener("click", (e) => {
+        console.log(e.target)
+    })
+
     startScreen.style.display = "none"
     form.style.display = "none"
 
@@ -142,4 +149,17 @@ function waitForRanking() {
         rulesScreen.style.display = "none"
         startScreen.style.display = "block"
     })
+
 }
+
+// function waitForPause() {
+//     pauseBtn.addEventListener("click", () => {
+//         console.log("slay?")
+//     })
+// }
+
+// function waitForPause() {
+//     pauseBtn.addEventListener("click", () => {
+//         window.location.reload()
+//     })
+// }
